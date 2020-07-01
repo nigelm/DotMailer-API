@@ -19,9 +19,49 @@ with 'Web::API';
 
 # ------------------------------------------------------------------------
 
-=pod
+=head1 DESCRIPTION
 
-This is undocumented to an amazing degree at present!
+L<Web::API> based API interface to the DotDigital / DotMailer Engagement Cloud
+API - as described at L<https://developer.dotdigital.com/docs>.
+
+The lack of documentation reflects the stage in development...
+
+=head1 SYNOPSIS
+
+    # THIS IS AT AN EARLY STAGE OF DEVELOPMENT - PROTOTYPING REALLY
+    # IT MAY CHANGE DRAMATICALLY OR EAT YOUR DATA.
+
+    use DotMailer::API
+
+    my $api = DotMailer::API->new(
+        username => 'demo@apiconnector.com',
+        password => 'demo',
+        debug => 1 );
+
+    my $res = $api->GetAccountInfo;
+
+
+=head2 Attributes
+
+=head3 api_url
+
+Base API URL of the service.  Defaults to C<https://api.dotmailer.com>. On the
+initial connection a C<GetAccountInfo> operation is carried out, and the
+C<ApiEndpoint> is taken from that and replaces the value of C<api_url> so that
+the correct regional URL is used for the authenticated user.
+
+
+=head3 username
+
+Username for logging in to the service.  Required.
+
+=head3 password
+
+Password for logging in to the service.  Required.
+
+=head3 debug
+
+Set debug on.  The higher the debug level, the more chatter is exposed.
 
 =cut
 
@@ -1147,7 +1187,7 @@ method BUILD ($args) {
     #
     # Now attempt a GetAccountInfo and fill in the correct API end point
     my $res = $self->GetAccountInfo;
-    if ( $res->code == 200 ) {
+    if ( $res->{code} == 200 ) {
         foreach my $prop ( @{ $res->{content}{properties} } ) {
             if ( $prop->{name} eq 'ApiEndpoint' ) {
                 $self->api_url( $prop->{value} );
